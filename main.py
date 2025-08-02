@@ -24,6 +24,7 @@ else:
 # --- CORS Configuration ---
 origins = [
     "https://d4159febd.base44.com",
+    "https://app--input-master-8d9b0621.base44.app",  # Deine neue URL
     "http://localhost:5173",
 ]
 
@@ -94,5 +95,6 @@ async def upload_audio_and_transcribe(
 @app.get("/")
 def read_root():
     return {"status": "Input Master Backend is running!", "transcription_service_configured": bool(openai.api_key)}
+
 
 
