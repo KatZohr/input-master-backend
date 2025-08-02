@@ -1,0 +1,62 @@
+import os
+import uuid
+from datetime import datetime
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import uvicorn
+
+app = FastAPI(
+    title="Input Master API",
+    description="Audio processing backend for Input Master app",
+    version="1.0.0"
+)
+
+# --- CORS Configuration ---
+# Allows your frontend to communicate with this backend.
+# The URL "https://d4159febd.base44.com" is your specific base44 app.
+origins = [
+    "https://d4159febd.base44.com",
+    "http://localhost:5173", # For base44 development environment
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+class AudioProcessingResponse(BaseModel):
+    message: str
+    file_name: str
+    user_id: str
+
+@app.post("/upload-audio/", response_model=AudioProcessingResponse)
+async def upload_audio(
+    file: UploadFile = File(...),
+    userId: str = Form(...),
+    reportType: str = Form(...)
+):
+    """
+    Accepts an audio file and metadata, then returns a confirmation.
+    In a real application, this is where you would process the audio.
+    """
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided.")
+    
+    print(f"Received file: {file.filename} for user {userId}")
+
+    # Here, you would add your logic to transcribe the audio
+    # and generate a report.
+
+    return AudioProcessingResponse(
+        message=f"Successfully uploaded {file.filename}",
+        file_name=file.filename,
+        user_id=userId
+    )
+
+@app.get("/")
+def read_root():
+    return {"status": "Input Master Backend is running!"}
